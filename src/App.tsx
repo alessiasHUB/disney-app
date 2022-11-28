@@ -1,24 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect } from 'react';
 
 function App() {
+  const [state, setState] = useState()
+
+  // fetch an image to be displayed
+  // fetch the name of the character and match
+  // it to the input below,
+
+  // check if the input is correct (convert to lowCase)
+  // when the button is clicked
+
+  // display CORRECT! || INCORRECT
+  // "Press ENTER to continue"
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p>Who is this?</p>
+      <input />
+      <button>Submit</button>
     </div>
   );
 }
