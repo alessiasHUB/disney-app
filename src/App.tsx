@@ -16,6 +16,12 @@ interface character {
   url: string;
 }
 
+// could add another quiz section, 
+// with every button PRESS another
+// section of the character is revealed
+// you get more points the earlier you guess
+// 1 minus point each time you guess it wrong
+
 function App() :JSX.ElementAttributesProperty {
   const [state, setState] = useState<character>()
 
@@ -31,6 +37,7 @@ function App() :JSX.ElementAttributesProperty {
   // display CORRECT! || INCORRECT
   // "Press ENTER to continue"
 
+  // add to div with score of CORRECT_COUNT
   return (
     <div className="App">
       <p>Who is this?</p>
