@@ -1,73 +1,195 @@
-import './App.css';
-import { useState, useEffect } from 'react';
+import "./App.css";
+import { useState, useEffect } from "react";
+import { text } from "stream/consumers";
 
 interface Character {
-  films: [];
-  shortFilms: [];
-  tvShows: [];
+  _id: number;
+  name: string;
+  films: string[];
+  shortFilms: string[];
+  tvShows: string[];
   videoGames: [];
   parkAttractions: [];
   allies: [];
   enemies: [];
-  _id: number;
-  name: string;
   imageUrl: string;
   url: string;
+  sourceUrl: string;
+  alignment: string;
 }
-interface Data {data:Character[]}
-// could add another quiz section, 
+
+interface Data {
+  data: Character[];
+}
+// could add another quiz section,
 // with every button PRESS another
 // section of the character is revealed
 // you get more points the earlier you guess
 // 1 minus point each time you guess it wrong
 
-function App() :JSX.Element {
-  const [data, setData] = useState<Data>()
-  const [char, setChar] = useState<Character>()
-  
-  useEffect(() => {
-    fetch('https://api.disneyapi.dev/characters')
-      .then(res => res.json())
-      .then(data => setData(data))
-    // this logs as undefined
-  }, []);
+type Answer = "CORRECT" | "INCORRECT";
 
-  let charImg = ''
-  const handleGuess = () => {
-    setChar(data?.data[Math.floor(Math.random() * data?.data.length)])
-    console.log(char)
-    console.log(char?.imageUrl)
-  }
+function App(): JSX.Element {
+  const [data, setData] = useState<Data>();
+  const [char, setChar] = useState<Character>();
+  const [input, setInput] = useState<string>("");
+  const [screen, setScreen] = useState<boolean>(false);
+  const [answer, setAnswer] = useState<Answer>();
+  const [points, setPoints] = useState<number>(0);
 
   // API-main: https://disneyapi.dev/
-  // API-to-use: https://api.disneyapi.dev/characters
-  // fetch an image to be displayed
-  // fetch the name of the character and match
-  // it to the input below,
+  // API-to-use: https://api.disneyapi.dev/characters?page=#
+  const apiURL: string = "https://api.disneyapi.dev/characters?page=";
 
-  // check if the input is correct (convert to lowCase)
-  // when the button is clicked
+  // sleep
+  // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-  // display CORRECT! || INCORRECT
-  // "Press ENTER to continue"
+  useEffect(() => {
+    // the URL has multiple pages
+    fetch(`${apiURL}${Math.floor(Math.random() * (Math.floor(7438 / 50) + 1))}`)
+      .then((res) => res.json())
+      .then((data) => setData(data));
+  }, []);
 
-  // add to div with score of CORRECT_COUNT
+  // get a random image to be displayed when "START GAME" || "CONTINUE" button is pressed
+  // ADD if statement if image is unavailable to load new one
+  const handleStartGame = () => {
+    setChar(data?.data[Math.floor(Math.random() * data?.data.length)]);
+    console.log(char);
+    console.log(char?.imageUrl);
+  };
+  // compare the INPUT to CHAR.NAME (SET to lower case)
+  // IF true => CORRECT
+  //    POINTS ++   &&   DISPLAY congratulations!  
+  //       &&    HANDLE_START_GAME
+  // IF false => INCORRECT
+  //    DISPLAY incorrect, the right answer was: CHAR.NAME  
+  //        &&    HANDLE_START_GAME
+  const handleGuess = () => {
+    setScreen(true);
+    console.log(char?.films[0].toLowerCase())
+    if (char?.name.toLowerCase() && char?.films[0].toLowerCase() && char?.tvShows[0].toLowerCase()){
+      if (
+        char?.name.toLowerCase() === input.toLowerCase() || 
+        char?.films[0].toLowerCase() === input.toLowerCase() || 
+        char?.tvShows[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.name.toLowerCase() && char?.films[0].toLowerCase()){
+      if (
+        char?.name.toLowerCase() === input.toLowerCase() || 
+        char?.films[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.name.toLowerCase() && char?.tvShows[0].toLowerCase()){
+      if (
+        char?.name.toLowerCase() === input.toLowerCase() || 
+        char?.tvShows[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.films[0].toLowerCase() && char?.tvShows[0].toLowerCase()){
+      if ( 
+        char?.films[0].toLowerCase() === input.toLowerCase() || 
+        char?.tvShows[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.name.toLowerCase()){
+      if (
+        char?.name.toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.films[0].toLowerCase()){
+      if (
+        char?.films[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    } else if (char?.tvShows[0].toLowerCase()){
+      if (
+        char?.tvShows[0].toLowerCase() === input.toLowerCase()
+        ) {
+        setAnswer("CORRECT");
+        setPoints((prev) => prev++);
+      } else {
+        setAnswer("INCORRECT");
+      }
+    }
+  };
+
+  const handleContinue = () => {
+    // clears input field
+    setInput('')
+    setScreen(false);
+  };
+
   return (
     <div className="App">
-      <div>
-      {char && (
+      {screen !== false && (
         <>
-          <div className="character">
-            <p></p>
-            <img src={char.imageUrl} alt="disney character" className='character-img'/>
-          </div>
+          <p>your answer was {answer}</p>
+          <button
+            onClick={() => {
+              handleContinue();
+              handleStartGame();
+            }}
+          >
+            Press to continue
+          </button>
         </>
       )}
-      </div>
-      <img src={charImg} alt=""/>
-      <p>Who is it ^ ?</p>
-      <input />
-      <button onClick={handleGuess}>Guess</button>
+      {char ? (
+        <>
+          <div className="character">
+            <br />
+            <img
+              src={char.imageUrl}
+              alt="disney character"
+              className="character-img"
+            />
+            <p>Who is that?</p>
+            <input
+              type="text"
+              placeholder="Search here"
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+              }}
+            />
+            <span> </span>
+            <button onClick={handleGuess}>Guess</button>
+            <p>Your score is: {points}</p>
+          </div>
+        </>
+      ) : (
+        <>
+          <br />
+          <br />
+          <br /> <button onClick={handleStartGame}>START GAME</button>
+        </>
+      )}
     </div>
   );
 }
